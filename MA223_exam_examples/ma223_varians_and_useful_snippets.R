@@ -54,8 +54,8 @@ for (i in 1:length(percentiles)) {
   bottom = (1 - percentiles[i])/2
   top = 1 - bottom
   
-  L = qgamma(bottom, k_[101],tau_[101])
-  R = qgamma(top, k_[101],tau_[101])
+  L = qgamma(bottom, kappa, tau)
+  R = qgamma(top, kappa, tau)
   
   segments(L, percentiles[i], R, percentiles[i], col=colors[i],lwd=3)
 }
