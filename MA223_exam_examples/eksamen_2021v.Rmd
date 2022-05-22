@@ -1,0 +1,205 @@
+---
+title: "eksamen_2021v"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(metRology)
+```
+
+# Grunnleggende
+
+## a) Bernoulli-prosess
+
+La A være alle R-brukere i verden, og B være alle MatLab- brukere. Bruk
+følgende anslag på antallene: R: \|A\| = 2 000 000 MatLab: \|B\| = 4 000
+000 Overlapp: \|AB\| = 400 000
+
+### i.
+
+La p1 være andelen R-brukere som også er MatLab-brukere, og la p2 være
+andelen MatLab-brukere som også er R-brukere. Regn ut disse to tallene.
+
+### ii.
+
+På den nye jobben din er det 15 R-brukere. La X være hvor mange av dem som også er MatLab-brukere, og la X $\thicksim$f(x). Finn 
+a. f(x) 
+b. E\[X\]
+c. Tegn sannsynlighetsfordelingen (pdf).
+
+### iii.
+
+Du er på konferanse for MatLab-brukere. La Y være antallet
+ikke-R-brukere du hilser på før du har hilst på 4 R-brukere, og la Y
+$\thicksim$g(y). Finn A. g(y) B. P(Y \> 20) C. $\sigma$\^2_Y .
+
+
+## b) Gaussisk prosess
+
+### i.
+X$\thicksim$f(x) er en kontinuerlig stokastisk variabel med E[X] = 4, $\sigma$X = 2.
+Bruk normaltilnærmingen til f(x) til å regne ut P(X $\leq$ 3).
+
+```{r, echo=FALSE}
+X = pnorm(3, 4, 2)
+
+```
+X = $\Phi_{(4, 2)}(3)$ = 0.30853
+
+### ii.
+Y $\thicksim$ g(y) er en diskret stokastisk variabel med E[Y] = 4, $\sigma$Y = 2. Bruk
+normaltilnærmingen til g(y) til å regne ut P(Y $\leq$ 3).
+
+```{r, echo=FALSE}
+Y = pnorm(3+0.5, 4, 2)
+```
+Y = $\Phi_{(4, 2)}(3 + \frac{1}{2})$ = `r Y`
+
+
+# Inferens
+
+## Gaussisk prosess
+
+```{r, echo=FALSE}
+data_2_b = c(-1.387893, 232.101166-233.028275, 227.13829-232.101166, 229.274261-227.13829, 228.989822-229.274261, 242.533188-228.989822, 244.142151-242.533188, 235.772461-244.142151, 232.944489-235.772461)
+
+data_2_b
+
+n = length(data_2_b)
+
+K_0 = 0
+Sigma_0 = 0
+nu_0 = -1
+C_0 = 0
+
+Sigma_X = sum(data_2_b)
+
+Sigma_XX = sum(data_2_b^2)
+
+SSx = Sigma_XX - n * mean(data_2_b)^2
+
+K_1 = K_0 +  n
+Sigma_1 = Sigma_0 + Sigma_X
+m_1 = (Sigma_1 / K_1)
+nu_1 = nu_0 + n
+C_1 = C_0 + Sigma_XX
+SS_1 = C_1 - K_1 * m_1^2
+
+s_1_2 = SS_1 / nu_1
+
+s_1 = sqrt(s_1_2)
+
+
+# Hvis Svein Olav er teit og vil ha enda en runde med sjekk i Gaussisk:
+ny_data = c(2832, 123, 123, 543,54,234)
+
+n_2 = length(ny_data)
+
+Sigma_X = sum(ny_data)
+
+Sigma_XX = sum(ny_data^2)
+
+SSx = Sigma_XX - n * mean(data_2_b)^2
+
+K_2 = K_1 +  n_2
+Sigma_2 = Sigma_1 + Sigma_X
+m_2 = (Sigma_2 / K_2)
+nu_2 = nu_1 + n_2
+C_2 = C_1 + Sigma_XX
+SS_2 = C_2 - K_2 * m_2^2
+
+s_2_2 = SS_2 / nu_2
+
+s_2 = sqrt(s_2_2)
+
+
+p_lik_5 = 1 - pgamma(0.04, nu_1/2, SS_1/2)
+p_lik_5
+
+```
+
+### i.
+
+$\tau \thicksim \gamma_{(\frac{`r nu_1`}{2}, \frac{`r SS_1`}{2})}(t)$ = $\tau \thicksim \gamma_{(`r nu_1/2`, `r SS_1/2`)}(t)$
+
+$\mu = t_{(`r m_1`, `r s_1 * sqrt(1/K_1)`, `r nu_1`)}(x)$
+
+$X_+ = t_{(`r m_1`, `r s_1 * sqrt(1 + (1/K_1))`, `r nu_1`)}(x)$
+
+
+### ii.
+
+$P(\sigma \leq 5) = P(\sigma^2 \leq 5^2) = P(\frac{1}{\sigma^2} \geq \frac{1}{5^2}) = P(\tau \geq 0.04)$
+
+
+$P(\tau \geq 0.04) = 1 - \Gamma_{(`r nu_1/2`, `r SS_1/2`)}(0.04) = `r p_lik_5`$
+
+### iii.
+$H_0$ blir da $P(\sigma \leq 5)$, og $H_1$ blir da $P(\sigma > 5)$
+Hvis $\alpha$ er større enn `r p_lik_5` så forkaster vi $H_0$ til fordel for $H_1$
+
+### vi.
+
+```{r plotting, echo=FALSE}
+xValsTau = seq(-20, 20, 0.1)
+yValsTau = dt.scaled(xValsTau, nu_1, m_1, s_1 * sqrt(1/K_1))
+
+yValsXPluss = dt.scaled(xValsTau, nu_1, m_1, s_1 * sqrt(1 + (1/K_1)))
+
+plot(xValsTau, yValsTau, type="l")
+lines(xValsTau, yValsXPluss, type="l")
+```
+
+### v.
+```{r, echo=FALSE}
+xValsBonus = seq(0, 20, 0.01)
+SigmaBonus = (2/xValsBonus^3) * dgamma((1/xValsBonus^2), 4, 147.939603)
+
+plot(xValsBonus, SigmaBonus, type="l", col="maroon")
+lines(xValsBonus, SigmaBonus*(xValsBonus<5), type="h", col="yellow")
+lines(xValsBonus, SigmaBonus, type="l", col="maroon")
+
+```
+
+## c) Lineær regresjon
+```{r, echo=FALSE}
+
+lin_reg_x = c(0.81329, 0.90790, 1.00710, 1.10630, 1.20700, 1.30460, 1.40380, 1.50450, 1.60680)
+lin_reg_y = c(0.27161, 0.56686, 0.93231, 1.30620, 1.71050, 2.13620, 2.61760, 3.11510, 3.47670)
+
+reg = lm(lin_reg_y ~ lin_reg_x)
+reg$coefficients
+
+plot(lin_reg_x, lin_reg_y, type="p", col="white")
+abline(reg, lwd=1, col="blue")
+```
+
+### i.
+
+```{r, echo=FALSE}
+plot(lin_reg_x, lin_reg_y, col="black")
+abline(reg, col="blue", lwd=2)
+
+a <- reg$coefficients[1]
+b <- reg$coefficients[2]
+
+SSe=0
+for(i in 1:length(lin_reg_x)) {
+  x0 = lin_reg_x[i]
+  x1 = lin_reg_x[i]
+  y0 = lin_reg_y[i]
+  y1 = a + b * x1
+  segments(x0, y0, x1, y1, lwd=3, col="orange")
+  
+  SSe = (y1-y0)^2 + SSe
+}
+```
+### iii.
+
