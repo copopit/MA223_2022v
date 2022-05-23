@@ -24,46 +24,175 @@ følgende anslag på antallene: R: \|A\| = 2 000 000 MatLab: \|B\| = 4 000
 
 ### i.
 
-La p1 være andelen R-brukere som også er MatLab-brukere, og la p2 være
-andelen MatLab-brukere som også er R-brukere. Regn ut disse to tallene.
+**La p1 være andelen R-brukere som også er MatLab-brukere, og la p2 være
+andelen MatLab-brukere som også er R-brukere. Regn ut disse to tallene.**
+
+Fordeling av R brukere som også er Matlab brukere: $\frac{AB}{A} = `r 400000/2000000`$
+
+Fordeling av Matlab brukere som også er R brukere: $\frac{AB}{B} = `r 400000/4000000`$
 
 ### ii.
 
-På den nye jobben din er det 15 R-brukere. La X være hvor mange av dem som også er MatLab-brukere, og la X $\thicksim$f(x). Finn 
-a. f(x) 
-b. E\[X\]
+På den nye jobben din er det 15 R-brukere. La X være hvor mange av dem
+som også er MatLab-brukere, og la X $\thicksim$f(x). Finn 
+a. f(x)
+b. E$$X$$
 c. Tegn sannsynlighetsfordelingen (pdf).
+
+a: $f(x) \thicksim bin_{(15, \hspace{2mm} 0.2)}(x)$
+
+b: $E[X] = 15 \cdot 0.2 = 3$
+
+c:
+
+```{r, echo=FALSE}
+
+bern_xVals = seq(0, 10, 1)
+
+bern_yVals = dbinom(bern_xVals, 15, 0.2)
+
+plot(bern_xVals, bern_yVals, type="h", lwd=3)
+```
+
+
 
 ### iii.
 
 Du er på konferanse for MatLab-brukere. La Y være antallet
 ikke-R-brukere du hilser på før du har hilst på 4 R-brukere, og la Y
-$\thicksim$g(y). Finn A. g(y) B. P(Y \> 20) C. $\sigma$\^2_Y .
+$\thicksim$g(y). 
+Finn 
+A. g(y)
+B. P(Y \> 20)
+C. $\sigma$\^2_Y .
 
+a: $Y \thicksim g_{(4, \hspace{2mm} 0.1)}(x)$
+
+```{r, echo=FALSE}
+P_Y_gt_20 = 1 - pnbinom(20, 4, 0.1)
+```
+b: $Y \thicksim g_{(4, \hspace{2mm} 0.1)}(20) = `r P_Y_gt_20`$
+
+```{r, echo=FALSE}
+sigma_bern_2 = (4 * (1-0.1)) / 0.1^2
+```
+c: $\sigma_Y^2 = \frac{4 \cdot (1 - 0.1)}{0.1^2} = `r sigma_bern_2`$
 
 ## b) Gaussisk prosess
 
 ### i.
-X$\thicksim$f(x) er en kontinuerlig stokastisk variabel med E[X] = 4, $\sigma$X = 2.
-Bruk normaltilnærmingen til f(x) til å regne ut P(X $\leq$ 3).
+
+X$\thicksim$f(x) er en kontinuerlig stokastisk variabel med E[X] = 4,
+$\sigma$X = 2. Bruk normaltilnærmingen til f(x) til å regne ut P(X
+$\leq$ 3).
 
 ```{r, echo=FALSE}
 X = pnorm(3, 4, 2)
 
 ```
+
 X = $\Phi_{(4, 2)}(3)$ = 0.30853
 
 ### ii.
-Y $\thicksim$ g(y) er en diskret stokastisk variabel med E[Y] = 4, $\sigma$Y = 2. Bruk
-normaltilnærmingen til g(y) til å regne ut P(Y $\leq$ 3).
+
+Y $\thicksim$ g(y) er en diskret stokastisk variabel med E[Y] = 4,
+$\sigma$Y = 2. Bruk normaltilnærmingen til g(y) til å regne ut P(Y
+$\leq$ 3).
 
 ```{r, echo=FALSE}
 Y = pnorm(3+0.5, 4, 2)
 ```
+
 Y = $\Phi_{(4, 2)}(3 + \frac{1}{2})$ = `r Y`
 
+## Sannsynlighetsfordelinger
+
+### i.
+
+**Hvorfor er ppois(1,$\lambda$) alltid større enn dpois(1,λ), uansett hvilken verdi du setter inn for $\lambda$?**
+
+Fordi ppois er CDF og den er kummulativ, vil den alltid være høyere enn dpois ettersom den bare gjelder for én verdi
+
+### ii.
+
+R kommandoen for å regne ut P($-2 \leq X < 6$) er først å ta CDF av 6, for å så trekke i fra CDF av -2
+
+```{r}
+P_2_leq_X_l_6 = pt.scaled(6, 5, 7, 3) - pt.scaled(-2, 5, 7, 3)
+P_2_leq_X_l_6
+```
+### iii.
+**Her er $f (x)$, altså pdf for en sannsynlighetsfordeling. CDF er en av grafene
+under. For $X \thicksim f (x)$, anslå**
+
+A. X̃= 7
+
+B. $X_max \approx 1$
+
+C. P ($X \leq 0$) = 0
+
+### iv.
+**Her er $g (y)$, altså pdf for en sannsynlighetsfordeling. CDF er en av grafene
+under. For $Y \thicksim g (y)$, anslå**
+
+A. Ỹ̃ =2.5
+
+B. $Y_max \approx 1.1$
+
+C. P ($Y \leq 0$) = 0.09
 
 # Inferens
+
+## Bernoulli-prosess 
+
+**Du har spurt 200 tilfeldige nordmenn om de skal på naturferie i sommer (i motsetning til byferie eller ikke-ferie). 57 svarer at de skal på naturferie, 123 at de ikke skal, mens 20 har ikke svart.**
+
+### i.
+
+Fordi det er et boolsk valg mellom skal/skal ikke på naturferie så gir det ikke mening å ta med dem som ikke har svart, ettersom det ikke er et av valgene.
+
+### ii.
+
+```{r}
+a_0 = 1
+b_0 = 1
+
+k = 57
+l = 123
+
+a_1 = a_0 + k
+b_1 = b_0 + l
+
+```
+
+### iii.
+
+$\pi = \beta_{(`r a_1`, \hspace{2mm} `r b_1`)}$
+
+### iv.
+
+```{r}
+top = qbeta(0.95, a_1, b_1)
+bottom = qbeta(0.05, a_1, b_1)
+```
+
+### v.
+
+```{r}
+xVals_hyp_bern = seq(0.1, 0.6, 0.001)
+yVals_hyp_bern = dbeta(xVals_hyp_bern, a_1, b_1)
+
+plot(xVals_hyp_bern, yVals_hyp_bern, type="l")
+lines(xVals_hyp_bern, yVals_hyp_bern*(xVals_hyp_bern<top)*(xVals_hyp_bern>bottom), type="h", col="yellow")
+lines(xVals_hyp_bern, yVals_hyp_bern, type="l")
+```
+
+### vi.
+Jeg ville gjort følgende i R:
+
+```{r}
+P_pi_g_03 = 1 - pbeta(0.3, a_1, b_1)
+```
 
 ## Gaussisk prosess
 
@@ -127,23 +256,24 @@ p_lik_5
 
 ### i.
 
-$\tau \thicksim \gamma_{(\frac{`r nu_1`}{2}, \frac{`r SS_1`}{2})}(t)$ = $\tau \thicksim \gamma_{(`r nu_1/2`, `r SS_1/2`)}(t)$
+$\tau \thicksim \gamma_{(\frac{`r nu_1`}{2}, \frac{`r SS_1`}{2})}(t)$ =
+$\tau \thicksim \gamma_{(`r nu_1/2`, `r SS_1/2`)}(t)$
 
 $\mu = t_{(`r m_1`, `r s_1 * sqrt(1/K_1)`, `r nu_1`)}(x)$
 
 $X_+ = t_{(`r m_1`, `r s_1 * sqrt(1 + (1/K_1))`, `r nu_1`)}(x)$
 
-
 ### ii.
 
 $P(\sigma \leq 5) = P(\sigma^2 \leq 5^2) = P(\frac{1}{\sigma^2} \geq \frac{1}{5^2}) = P(\tau \geq 0.04)$
 
-
 $P(\tau \geq 0.04) = 1 - \Gamma_{(`r nu_1/2`, `r SS_1/2`)}(0.04) = `r p_lik_5`$
 
 ### iii.
-$H_0$ blir da $P(\sigma \leq 5)$, og $H_1$ blir da $P(\sigma > 5)$
-Hvis $\alpha$ er større enn `r p_lik_5` så forkaster vi $H_0$ til fordel for $H_1$
+
+$H_0$ blir da $P(\sigma \leq 5)$, og $H_1$ blir da $P(\sigma > 5)$ Hvis
+$\alpha$ er større enn $P(\sigma \leq 5)$ så forkaster vi $H_0$ til fordel for
+$H_1$
 
 ### vi.
 
@@ -158,6 +288,7 @@ lines(xValsTau, yValsXPluss, type="l")
 ```
 
 ### v.
+
 ```{r, echo=FALSE}
 xValsBonus = seq(0, 20, 0.01)
 SigmaBonus = (2/xValsBonus^3) * dgamma((1/xValsBonus^2), 4, 147.939603)
@@ -169,6 +300,7 @@ lines(xValsBonus, SigmaBonus, type="l", col="maroon")
 ```
 
 ## c) Lineær regresjon
+
 ```{r, echo=FALSE}
 
 lin_reg_x = c(0.81329, 0.90790, 1.00710, 1.10630, 1.20700, 1.30460, 1.40380, 1.50450, 1.60680)
@@ -176,9 +308,54 @@ lin_reg_y = c(0.27161, 0.56686, 0.93231, 1.30620, 1.71050, 2.13620, 2.61760, 3.1
 
 reg = lm(lin_reg_y ~ lin_reg_x)
 reg$coefficients
+summary(reg)
 
 plot(lin_reg_x, lin_reg_y, type="p", col="white")
 abline(reg, lwd=1, col="blue")
+
+
+X=matrix(cbind(1, lin_reg_x), ncol=2, nrow = length(lin_reg_x))
+X
+Xt=t(X)
+
+Y=matrix(lin_reg_y)
+Y
+
+XTX= Xt%*%X
+XTX
+
+XTXIn = solve(XTX)
+XTXIn
+
+XTy= Xt%*%Y
+XTy
+
+XTXInXTy= XTXIn %*%XTy
+XTXInXTy
+
+
+
+#_______Total error og Standardfeil______
+
+Yt=t(lin_reg_y)
+Yt
+
+beta= XTXInXTy
+beta
+
+betaT=t(XTXInXTy)
+betaT
+
+Yt%*%Y
+betaT%*%Xt
+betaT%*%Xt%*%X
+betaT%*%Xt%*%X%*%beta
+
+SSe_reg = (Yt%*%Y)-(betaT%*%Xt%*%X%*%beta)
+SSe_reg
+
+Se2= SSe_reg/(length(lin_reg_x)-2)
+Se2
 ```
 
 ### i.
@@ -201,5 +378,42 @@ for(i in 1:length(lin_reg_x)) {
   SSe = (y1-y0)^2 + SSe
 }
 ```
+
 ### iii.
 
+```{r}
+
+beta_reg = matrix(cbind(reg$coefficients[1], reg$coefficients[2]), ncol = 1, nrow=2)
+
+
+n_reg_0 = length(lin_reg_x)
+nu_0_reg = -2
+SS_0_reg = 0
+
+nu_1_reg = nu_0_reg + n_reg_0
+SS_1_reg = SS_0_reg + SSe_reg
+
+
+tau_reg = dgamma(nu_1_reg/2, SS_1_reg/2)
+
+S_1_2_reg = SS_1_reg/nu_1_reg 
+S_1_reg = sqrt(S_1_2_reg)
+
+b_reg = dt.scaled(beta_reg, S_1_2_reg, nu_1_reg)
+
+SSx = sum(lin_reg_x^2) - (sum(lin_reg_x)^2 / length(lin_reg_x))
+
+
+```
+
+$\tau  \gamma_{(`r nu_1_reg/2`, \hspace{2mm}  `r SS_1_reg/2`)}$
+
+$s_1^2 = \frac{`r SS_1_reg`}{`r nu_1_reg`}$
+
+$s_1 = \sqrt{`r s_1_2`}$
+
+$b \thicksim t_{(`r beta[2]`,\hspace{2mm} `r S_1_reg * sqrt(1/SSx)`, \hspace{2mm} `r nu_1_reg`)}$
+
+$y(x) \thicksim t_{(`r beta_reg[1]` + `r beta_reg[2]`, \hspace{2mm} `r S_1_reg` \cdot \sqrt{\frac{1}{`r n_reg_0`} + \frac{1}{`r SSx`}(x - `r mean(lin_reg_x)`)^2}, \hspace{2mm}  `r nu_1_reg`)}$
+
+$Y_+(x) \thicksim t_{(`r beta_reg[1]` + `r beta_reg[2]`, \hspace{2mm} `r S_1_reg` \cdot \sqrt{1 + \frac{1}{`r n_reg_0`} + \frac{1}{`r SSx`}(x - `r mean(lin_reg_x)`)^2}, \hspace{2mm}  `r nu_1_reg`)}$
